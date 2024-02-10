@@ -11,6 +11,7 @@ export interface UserDocument extends Document {
 // user interface
 
 interface User {
+  _id: number;
   username: string;
   email: string;
   password: string;

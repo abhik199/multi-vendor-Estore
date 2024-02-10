@@ -2,14 +2,14 @@ import { FilterQuery, UpdateQuery, QueryOptions } from "mongoose";
 import User, { UserDocument } from "../models/user.model";
 
 // create user
-export async function createUser(
+async function createUser(
   input: Omit<UserDocument, "createdAt" | "updatedAt">
 ): Promise<UserDocument> {
   return User.create(input);
 }
 
 // find user
-export async function findUser(
+async function findUser(
   query: FilterQuery<UserDocument>,
   options: QueryOptions = { lean: true }
 ) {
@@ -17,7 +17,7 @@ export async function findUser(
 }
 
 // find and update user
-export async function findAndUpdateUser(
+async function findAndUpdateUser(
   query: FilterQuery<UserDocument>,
   update: UpdateQuery<UserDocument>,
   options: QueryOptions
@@ -27,6 +27,13 @@ export async function findAndUpdateUser(
 
 // delete user
 
-export async function deleteUser(query: FilterQuery<UserDocument>) {
+async function deleteUser(query: FilterQuery<UserDocument>) {
   return User.deleteOne(query);
 }
+
+export const userServices = {
+  createUser,
+  findUser,
+  findAndUpdateUser,
+  deleteUser,
+};
