@@ -2,4 +2,4 @@ import { config } from "dotenv";
 
 config();
 
-export const { email_user, email_pass } = process.env;
+export const { email_user, email_pass, access_token } = process.env;

@@ -3,7 +3,7 @@ import nodemailer from "nodemailer";
 import ejs from "ejs";
 import path from "path";
 
-interface emailKey {
+export interface emailKey {
   email: string;
   name: string;
   otp: number;
@@ -21,29 +21,31 @@ const emailService = async (emailData: emailKey) => {
     },
   });
 
-  ejs.renderFile(
-    path.join(__dirname, "../views/otp.ejs"),
-    { name: emailData.name, otp: emailData.otp },
-    (err, data) => {
-      if (err) {
-        console.log(err);
-      } else {
-        const message = {
-          from: "grocery store",
-          to: emailData.email,
-          subject: "otp Verification Mail",
-          html: data,
-        };
-        transporter.sendMail(message, (error, info) => {
-          if (error) {
-            console.log("Error sending email:", error);
-          } else {
-            console.log("Email sent:", info.response);
-          }
-        });
+  return new Promise((resolve, reject) => {
+    ejs.renderFile(
+      path.join(__dirname, "../views/otp.ejs"),
+      { name: emailData.name, otp: emailData.otp },
+      (err, data) => {
+        if (err) {
+          console.log(err);
+        } else {
+          const message = {
+            from: "grocery store",
+            to: emailData.email,
+            subject: "otp Verification Mail",
+            html: data,
+          };
+          transporter.sendMail(message, (error, info) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(info.response);
+            }
+          });
+        }
       }
-    }
-  );
+    );
+  });
 };
 
 export default emailService;

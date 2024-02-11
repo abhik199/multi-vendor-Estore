@@ -8,6 +8,13 @@ async function createUser(
   return User.create(input);
 }
 
+async function findOne(
+  query: FilterQuery<UserDocument>,
+  options: QueryOptions = { lean: true }
+) {
+  return User.findOne(query, {}, options);
+}
+
 // find user
 async function findUser(
   query: FilterQuery<UserDocument>,
@@ -22,7 +29,7 @@ async function findAndUpdateUser(
   update: UpdateQuery<UserDocument>,
   options: QueryOptions
 ) {
-  return User.findOneAndUpdate(query, options);
+  return User.findOneAndUpdate(query, update, options);
 }
 
 // delete user
@@ -36,4 +43,5 @@ export const userServices = {
   findUser,
   findAndUpdateUser,
   deleteUser,
+  findOne,
 };
