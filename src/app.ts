@@ -1,13 +1,24 @@
 import express from "express";
-import rootRoute from "./routes/root.route";
-const app = express();
+import cors from "cors";
+import morgan from "morgan";
+import path from "path";
+const port = process.env.PORT || 3001;
 
+const app = express();
+app.use(cors());
+app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const port = process.env.PORT || 3001;
+import rootRoute from "./routes/root.route";
+import connects from "./config/db.connection";
 
 app.use("/api/v1", rootRoute);
+
+connects();
+
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "ejs");
 
 app.listen(port, () => {
   console.log(`Serving on port ${port}`);
