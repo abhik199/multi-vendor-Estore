@@ -22,6 +22,9 @@ interface User {
 
 const userSchema = new Schema<User>(
   {
+    _id: {
+      type: Number,
+    },
     username: {
       type: String,
     },
