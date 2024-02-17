@@ -1,22 +1,35 @@
-import jwt from "jsonwebtoken";
+import { config } from "dotenv";
+import jwt, { SignOptions, VerifyOptions } from "jsonwebtoken";
 import { access_token } from "../config/conf";
 
-// some issue after some add access token in .env file
+config();
+
 interface Payload {
   [key: string]: any;
 }
 
-export function sign(
-  payload: Payload,
-  expiry: string = "60s",
-  secret: string = "df54da6s87ase87da3a2s4aaaa8e"
-): string {
-  return jwt.sign(payload, secret, { expiresIn: expiry });
+// const jwtSecret = process.env.access_token || ""; // Use a more descriptive name for the environment variable
+
+// export function sign(payload: Payload, expiry: string = "60s"): string {
+//   const options: SignOptions = { expiresIn: expiry };
+//   return jwt.sign(payload, jwtSecret, options);
+// }
+
+// export function verify(token: string): Payload {
+//   try {
+//     const decoded = jwt.verify(token, jwtSecret) as Payload;
+//     return decoded;
+//   } catch (error) {
+//     throw new Error("Token verification failed");
+//   }
+// }
+
+const jwtSecret = access_token || "";
+
+export function sign(payload: Payload, expiry: string = "60s") {
+  return jwt.sign(payload, jwtSecret, { expiresIn: expiry });
 }
 
-export function verify(
-  token: string,
-  secret: string = "df54da6s87ase87da3a2s4aaaa8e"
-) {
-  return jwt.verify(token, secret);
+export function verify(token: string) {
+  return jwt.verify(token, jwtSecret);
 }
