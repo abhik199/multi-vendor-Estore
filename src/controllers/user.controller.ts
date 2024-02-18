@@ -67,6 +67,10 @@ const userLogin = async (req: Request, res: Response, next: NextFunction) => {
       email: req.body.email,
       roles: req.body.roles,
     });
+    res.cookie("token", accessToken, {
+      maxAge: 1000 * 60 * 60 * 24 * 30,
+      httpOnly: true,
+    });
     if (accessToken) {
       return res.json({ message: "user login successfully", accessToken });
     }

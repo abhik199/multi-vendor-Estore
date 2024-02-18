@@ -7,7 +7,7 @@ async function createVender(
   return Vender.create(input);
 }
 
-async function findVenderId(
+async function findOneVender(
   query: FilterQuery<VenderDocument>,
   options: QueryOptions = { lean: true }
 ) {
@@ -35,7 +35,7 @@ async function getVender(
 
 export const venderService = {
   createVender,
-  findVenderId,
+  findOneVender,
   updateVender,
   deleteVender,
   getVender,
