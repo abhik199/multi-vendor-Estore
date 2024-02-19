@@ -3,8 +3,17 @@ import { adminService } from "../services/admin.service";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 import generateTokens from "../utils/generateToken.util";
+import Joi from "joi";
 
 const adminLogin = async (req: Request, res: Response, next: NextFunction) => {
+  const adminSchema = Joi.object({
+    username: Joi.string().required(),
+    password: Joi.string().required(),
+  });
+  const { error } = adminSchema.validate(req.body);
+  if (error) {
+    return next(error);
+  }
   try {
     const admin = await adminService.findAdmin({
       username: req.params.username,
@@ -27,6 +36,70 @@ const adminLogin = async (req: Request, res: Response, next: NextFunction) => {
     });
     return res.json({ message: "admin login successful" });
     return res;
+  } catch (error) {
+    return next(error);
+  }
+};
+
+const updateProfile = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const profileSchema = Joi.object({
+    id: Joi.string().required(),
+  });
+  const { error } = profileSchema.validate(req.params);
+  if (error) {
+    return next(error);
+  }
+  try {
+    const check = await adminService.findOneAdmin({ _id: req.params.id });
+    if (!check) {
+      return res.json({ message: "admin not found" });
+    }
+    const admin = await adminService.updateAdmin(
+      { _id: req.params.id },
+      { username: req.body.username, profile: req.body.profile },
+      {}
+    );
+    if (admin) {
+      return res.json({ message: "admin profile update" });
+    }
+  } catch (error) {
+    return next(error);
+  }
+};
+
+const changePassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const passwordSchema = Joi.object({
+    email: Joi.string().required(),
+    oldPassword: Joi.string().required(),
+    newPassword: Joi.string().required(),
+  });
+  const { error } = passwordSchema.validate(req.body);
+  if (error) {
+    return next(error);
+  }
+  try {
+    const admin = await adminService.findOneAdmin({ _id: req.params.id });
+    if (admin) {
+      const oldPassword = await bcrypt.compare(
+        admin.password,
+        req.body.oldPassword
+      );
+      if (!oldPassword) {
+        return res.json({ message: "old password wrong" });
+      }
+      const newPassword = await bcrypt.hash(req.body.password, 10);
+      if (newPassword) {
+        return res.json({ message: "password successfully changes" });
+      }
+    }
   } catch (error) {
     return next(error);
   }

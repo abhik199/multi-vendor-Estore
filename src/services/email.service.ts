@@ -6,7 +6,9 @@ import path from "path";
 export interface emailKey {
   email: string;
   name: string;
-  otp: number;
+  otp?: number;
+  url?: string;
+  paths: string;
 }
 
 const emailService = async (emailData: emailKey) => {
@@ -23,11 +25,17 @@ const emailService = async (emailData: emailKey) => {
 
   return new Promise((resolve, reject) => {
     ejs.renderFile(
-      path.join(__dirname, "../views/otp.ejs"),
-      { name: emailData.name, otp: emailData.otp },
+      path.join(__dirname, `${emailData.paths}`),
+      {
+        name: emailData.name,
+        ...(emailData.paths === "../views/otp.ejs"
+          ? { otp: emailData.otp }
+          : { url: emailData.url }),
+      },
       (err, data) => {
         if (err) {
-          console.log(err);
+          console.error(err);
+          reject(err);
         } else {
           const message = {
             from: "grocery store",
@@ -37,6 +45,7 @@ const emailService = async (emailData: emailKey) => {
           };
           transporter.sendMail(message, (error, info) => {
             if (error) {
+              console.error(error);
               reject(error);
             } else {
               resolve(info.response);
@@ -55,6 +64,7 @@ export default emailService;
 //   email: "example@example.com",
 //   name: "John Doe",
 //   otp: 123456,
+//   path: "../views/otp.ejs"
 // };
 
 // emailService(exampleEmailData);
