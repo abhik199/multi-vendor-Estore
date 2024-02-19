@@ -4,6 +4,7 @@ import crypto from "crypto";
 import { userServices } from "../services/user.service";
 import emailService, { emailKey } from "../services/email.service";
 import generateTokens from "../utils/generateToken.util";
+import Joi from "joi";
 
 // generate 6 digit otp
 const generateOtp = () => {
@@ -11,8 +12,17 @@ const generateOtp = () => {
 };
 
 const create_user = async (req: Request, res: Response, next: NextFunction) => {
-  if (!req.body || Object.keys(req.body).length === 0) {
-    return res.json({ message: "empty body not allowed" });
+  // if (!req.body || Object.keys(req.body).length === 0) {
+  //   return res.json({ message: "empty body not allowed" });
+  // }
+  const userSchema = Joi.object({
+    username: Joi.string().optional(),
+    email: Joi.string().required(),
+    password: Joi.string().required(),
+  });
+  const { error } = userSchema.validate(req.body);
+  if (error) {
+    return next(error);
   }
   try {
     const check = await userServices.findOne({ email: req.body.email });
@@ -33,6 +43,7 @@ const create_user = async (req: Request, res: Response, next: NextFunction) => {
       email: user.email,
       name: user.username,
       otp: OTP,
+      paths: "../views/otp.ejs",
     };
     const info = await emailService(emailData);
 
@@ -47,8 +58,16 @@ const create_user = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 const userLogin = async (req: Request, res: Response, next: NextFunction) => {
-  if (!req.body.email || !req.body.password) {
-    return res.json({ message: "Incorrect email and password" });
+  // if (!req.body.email || !req.body.password) {
+  //   return res.json({ message: "Incorrect email and password" });
+  // }
+  const userSchema = Joi.object({
+    email: Joi.string().required(),
+    password: Joi.string().required(),
+  });
+  const { error } = userSchema.validate(req.body);
+  if (error) {
+    return next(error);
   }
   try {
     const user = await userServices.findOne({ email: req.body.email });
@@ -162,6 +181,7 @@ const reVerify = async (req: Request, res: Response, next: NextFunction) => {
         email: user.email,
         name: user.username,
         otp: OTP,
+        paths: "../views/otp.ejs",
       };
       const info = await emailService(emailData);
       if (newOTP) {

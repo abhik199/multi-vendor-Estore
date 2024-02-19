@@ -4,6 +4,7 @@ export interface AdminDocument extends Document {
   username: string;
   password: string;
   roles: string;
+  profile: string;
 }
 
 const adminSchema = new Schema<AdminDocument>({
@@ -11,6 +12,9 @@ const adminSchema = new Schema<AdminDocument>({
     type: String,
   },
   password: {
+    type: String,
+  },
+  profile: {
     type: String,
   },
   roles: {
