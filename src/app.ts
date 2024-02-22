@@ -11,6 +11,7 @@ app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static("../public"));
 
 import rootRoute from "./routes/root.route";
 import connects from "./config/db.connection";

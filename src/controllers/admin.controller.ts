@@ -31,3 +31,7 @@ const adminLogin = async (req: Request, res: Response, next: NextFunction) => {
     return next(error);
   }
 };
+
+export const adminController = {
+  adminLogin,
+};
