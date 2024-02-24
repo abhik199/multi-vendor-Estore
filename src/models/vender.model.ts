@@ -27,7 +27,7 @@ const venderSchema = new Schema<VenderDocument>(
     },
     roles: {
       type: String,
-      default: "vender",
+      default: "vendor",
     },
     profile: {
       type: String,
