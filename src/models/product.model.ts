@@ -1,34 +1,51 @@
 import { Schema, model, Document } from "mongoose";
 
 export interface ProductDocument extends Document {
-  name: string;
-  price: number;
-  description: string;
-  category: string;
-  stock: number;
-  imageUrl: string;
+  vendor: Schema.Types.ObjectId;
+  products: Array<{
+    name: string;
+    price: number;
+    description: string;
+    category: Schema.Types.ObjectId;
+    stock: number;
+    imagesUrl: Array<{ image: string }>;
+  }>;
 }
 
 const productSchema: Schema = new Schema(
   {
-    name: {
-      type: String,
+    vendor: {
+      type: Schema.Types.ObjectId,
+      ref: "vendor",
+      required: true,
     },
-    price: {
-      type: Number,
-    },
-    description: {
-      type: String,
-    },
-    category: {
-      type: String,
-    },
-    stock: {
-      type: Number,
-    },
-    imageUrl: {
-      type: String,
-    },
+    products: [
+      {
+        name: {
+          type: String,
+        },
+        price: {
+          type: Number,
+        },
+        description: {
+          type: String,
+        },
+        category: {
+          type: Schema.Types.ObjectId,
+          ref: "Category",
+        },
+        stock: {
+          type: Number,
+        },
+        imagesUrl: [
+          {
+            image: {
+              type: String,
+            },
+          },
+        ],
+      },
+    ],
   },
   { timestamps: true }
 );

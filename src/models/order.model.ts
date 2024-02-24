@@ -1,12 +1,11 @@
 // order.model.ts
 
 import mongoose, { Schema, Document } from "mongoose";
-
-// Define the interface for the Order document
-interface IOrder extends Document {
+export interface OrderDocument extends Document {
   user: string;
   products: Array<{ product: string; quantity: number }>;
   totalAmount: number;
+  orderStatus: string;
 }
 
 const orderSchema: Schema = new Schema(
@@ -29,6 +28,12 @@ const orderSchema: Schema = new Schema(
         },
       },
     ],
+    orderStatus: {
+      type: String,
+      enum: ["Pending", "Dispatched", "Delivered", "Canceled"],
+      default: "Pending",
+    },
+
     totalAmount: {
       type: Number,
       required: true,
@@ -37,4 +42,4 @@ const orderSchema: Schema = new Schema(
   { timestamps: true }
 );
 
-export default mongoose.model<IOrder>("Order", orderSchema);
+export default mongoose.model<OrderDocument>("Order", orderSchema);
