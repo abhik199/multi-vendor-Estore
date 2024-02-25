@@ -3,6 +3,8 @@ import bcrypt from "bcrypt";
 import crypto from "crypto";
 import Joi from "joi";
 import { venderService } from "../services/vender.service";
+import venderModel from "../models/vender.model";
+import generateTokens from "../utils/generateToken.util";
 
 const createVender = async (
   req: Request,
@@ -35,8 +37,37 @@ const createVender = async (
     return next(error);
   }
 };
-const venderLogin = (req: Request, res: Response, next: NextFunction) => {
+const venderLogin = async (req: Request, res: Response, next: NextFunction) => {
+  const vendorSchema = Joi.object({
+    email: Joi.string().required(),
+    password: Joi.string().required(),
+  });
+  const { error } = vendorSchema.validate(req.body);
+  if (error) {
+    return next(error);
+  }
   try {
+    const vendor = await venderModel.findOne({ email: req.body.email });
+    if (!vendor) {
+      return res.json({ message: "Incorrect credentials", success: false });
+    }
+    const isMatch = await bcrypt.compare(req.body.password, vendor.password);
+    if (!isMatch) {
+      return res.json({ message: "Incorrect credentials", success: false });
+    }
+
+    const accessToken = await generateTokens({
+      _id: vendor._id,
+      email: vendor.email,
+      roles: vendor.roles,
+    });
+    res.cookie("token", accessToken, {
+      maxAge: 1000 * 60 * 60 * 24 * 30,
+      httpOnly: true,
+    });
+    if (accessToken) {
+      return res.json({ message: "user login successfully" });
+    }
   } catch (error) {
     return next(error);
   }

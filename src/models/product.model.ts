@@ -32,7 +32,7 @@ const productSchema: Schema = new Schema(
         },
         category: {
           type: Schema.Types.ObjectId,
-          ref: "Category",
+          ref: "category",
         },
         stock: {
           type: Number,
