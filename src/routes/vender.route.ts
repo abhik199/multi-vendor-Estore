@@ -2,6 +2,7 @@ import { Router } from "express";
 import { venderController } from "../controllers/vender.controller";
 import { productController } from "../controllers/product.controller";
 import { upload } from "../services/img.service";
+import { auth, vendor_auth } from "../middleware/auth";
 
 const venderRoute = Router();
 
@@ -13,11 +14,17 @@ venderRoute.patch("/update", venderController.updateVender);
 
 venderRoute.post(
   "/product",
+  [auth, vendor_auth],
   upload.array("product-image", 5),
   productController.createProduct
 );
-venderRoute.post("/category", productController.createCategory);
+venderRoute.post(
+  "/category",
+  [auth, vendor_auth],
+  productController.createCategory
+);
 
 venderRoute.get("/product", productController.getProduct);
+venderRoute.get("/category", productController.getCategory);
 
 export default venderRoute;

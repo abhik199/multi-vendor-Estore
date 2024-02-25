@@ -26,7 +26,7 @@ interface Payload {
 
 const jwtSecret = access_token || "";
 
-export function sign(payload: Payload, expiry: string = "60s") {
+export function sign(payload: Payload, expiry: string = "24h") {
   return jwt.sign(payload, jwtSecret, { expiresIn: expiry });
 }
 

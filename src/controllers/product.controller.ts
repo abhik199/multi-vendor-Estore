@@ -1,28 +1,23 @@
 import { Request, Response, NextFunction } from "express";
-import { productService } from "../services/product.service";
-import { venderService } from "./../services/vender.service";
 import productModel, { ProductDocument } from "../models/product.model";
-import { Multer } from "multer";
 import categoryModel from "../models/category.model";
+import { CategoryDocument } from "./../models/category.model";
+import { AuthRequest } from "../middleware/auth";
 
 interface MulterFile {
   originalname: string;
 }
 
 const createProduct = async (
-  req: Request,
+  req: AuthRequest,
   res: Response,
   next: NextFunction
 ) => {
+  const { _id } = req.user;
   try {
-    // const check = await venderService.findOneVender({ is_verify: true });
-    // if (!check) {
-    //   return res.status(400).json({ message: "vendor is not verify" });
-    // }
-
     const productImages: MulterFile[] = (req.files as MulterFile[]) || [];
     const existingVendorProducts: ProductDocument | null =
-      await productModel.findOne({ vendor: req.body.vendorId });
+      await productModel.findOne({ vendor: _id });
 
     const newProduct = {
       name: req.body.name,
@@ -44,10 +39,10 @@ const createProduct = async (
       });
     } else {
       const productData: ProductDocument = await productModel.create({
-        vendor: req.body.vendorId,
+        vendor: _id,
         products: [newProduct],
       });
-      //   await productData.save();
+
       res.status(201).json({
         message: "Product created successfully",
         product: productData,
@@ -59,19 +54,37 @@ const createProduct = async (
 };
 
 const createCategory = async (
-  req: Request,
+  req: AuthRequest,
   res: Response,
   next: NextFunction
 ) => {
+  const { _id } = req.user;
+
   try {
-    const category = await categoryModel.create({
-      name: req.body.name,
+    const exits: CategoryDocument | null = await categoryModel.findOne({
+      vendor: _id,
     });
-    if (category) {
-      return res.json({
-        message: "Category created successfully",
+
+    const newCategory = {
+      name: req.body.name,
+    };
+
+    if (exits) {
+      exits.category.push(newCategory);
+      await exits.save();
+      res.status(201).json({
+        message: "category created successfully",
+      });
+    } else {
+      const categoryData: CategoryDocument = await categoryModel.create({
+        vendor: _id,
+        category: [newCategory],
+      });
+      res.status(201).json({
+        message: "category created successfully",
       });
     }
+
     return res.json({ message: "Category not created" });
   } catch (error) {
     return next(error);
@@ -80,12 +93,23 @@ const createCategory = async (
 
 const getProduct = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const products: ProductDocument[] = await productModel
+    const products = await productModel
       .find({})
-      .populate("Category")
-      .exec();
+      .populate("vendor")
+      .populate("products.category");
 
     return res.json({ product: products });
+  } catch (error) {
+    return next(error);
+  }
+};
+const getCategory = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const category = await categoryModel
+      .find({})
+      .populate({ path: "vendor", select: "-password -is_verify -roles -__v" })
+      .select("-__v");
+    res.json({ category: category });
   } catch (error) {
     return next(error);
   }
@@ -95,4 +119,5 @@ export const productController = {
   createProduct,
   createCategory,
   getProduct,
+  getCategory,
 };

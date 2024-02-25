@@ -38,4 +38,4 @@ const venderSchema = new Schema<VenderDocument>(
   }
 );
 
-export default model<VenderDocument>("vender", venderSchema);
+export default model<VenderDocument>("vendor", venderSchema);
