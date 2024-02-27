@@ -9,6 +9,13 @@ const venderRoute = Router();
 venderRoute.post("/login", venderController.venderLogin);
 venderRoute.post("/register", venderController.createVender);
 venderRoute.patch("/update", venderController.updateVender);
+venderRoute.post("/forgot_password", venderController.forgotPassword);
+venderRoute.get("/reset_password", venderController.resetPassword);
+venderRoute.post(
+  "/change_password",
+  [auth, vendor_auth],
+  venderController.changePassword
+);
 
 // product
 
