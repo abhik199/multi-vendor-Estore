@@ -8,6 +8,7 @@ export interface VenderDocument extends Document {
   profile: string;
   email: string;
   roles: string;
+  company: string;
 }
 
 const venderSchema = new Schema<VenderDocument>(
@@ -24,6 +25,9 @@ const venderSchema = new Schema<VenderDocument>(
     is_verify: {
       type: Boolean,
       default: false,
+    },
+    company: {
+      type: String,
     },
     roles: {
       type: String,

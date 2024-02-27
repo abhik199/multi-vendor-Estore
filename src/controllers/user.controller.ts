@@ -12,9 +12,6 @@ const generateOtp = () => {
 };
 
 const create_user = async (req: Request, res: Response, next: NextFunction) => {
-  // if (!req.body || Object.keys(req.body).length === 0) {
-  //   return res.json({ message: "empty body not allowed" });
-  // }
   const userSchema = Joi.object({
     username: Joi.string().optional(),
     email: Joi.string().required(),
