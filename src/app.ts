@@ -4,8 +4,8 @@ import morgan from "morgan";
 import path from "path";
 import cookieParser from "cookie-parser";
 const port = process.env.PORT || 3001;
-// error Handler =
 const app = express();
+
 app.use(cors());
 app.use(cookieParser());
 app.use(morgan("tiny"));
