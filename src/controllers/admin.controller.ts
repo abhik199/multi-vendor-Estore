@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import crypto from "crypto";
 import generateTokens from "../utils/generateToken.util";
 import Joi from "joi";
+import adminModel, { AdminDocument } from "../models/admin.model";
 
 const adminLogin = async (req: Request, res: Response, next: NextFunction) => {
   const adminSchema = Joi.object({
@@ -15,13 +16,15 @@ const adminLogin = async (req: Request, res: Response, next: NextFunction) => {
     return next(error);
   }
   try {
-    const admin = await adminService.findAdmin({
+    const admin: AdminDocument | null = await adminModel.findOne({
       username: req.params.username,
     });
     if (!admin) {
       return res.json({ message: "wrong credentials" });
     }
-    const pass = await adminService.findAdmin({ password: req.body.password });
+    const pass: AdminDocument | null = await adminModel.findOne({
+      password: req.body.password,
+    });
     if (!pass) {
       return res.json({ message: "wrong credentials" });
     }
@@ -58,10 +61,9 @@ const updateProfile = async (
     if (!check) {
       return res.json({ message: "admin not found" });
     }
-    const admin = await adminService.updateAdmin(
+    const admin: AdminDocument | null = await adminModel.findOne(
       { _id: req.params.id },
-      { username: req.body.username, profile: req.body.profile },
-      {}
+      { username: req.body.username, profile: req.body.profile }
     );
     if (admin) {
       return res.json({ message: "admin profile update" });
@@ -103,4 +105,47 @@ const changePassword = async (
   } catch (error) {
     return next(error);
   }
+};
+
+const forgotPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const forgotSchema = Joi.object({
+    email: Joi.string().optional(),
+  });
+  const { error } = forgotSchema.validate(req.body);
+  if (error) {
+    return next(error);
+  }
+  try {
+    const admin: AdminDocument | null = await adminModel.findOne({
+      email: req.body.email,
+    });
+    if (!admin) {
+      return res.json({ message: "email is wrong" });
+    }
+    const url = "";
+  } catch (error) {
+    return next(error);
+  }
+};
+
+const resetPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const adminController = {
+  changePassword,
+  updateProfile,
+  adminLogin,
+  resetPassword,
 };
