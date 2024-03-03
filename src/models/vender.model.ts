@@ -4,7 +4,7 @@ export interface VenderDocument extends Document {
   _id: number;
   username: string;
   password: string;
-  is_verify: boolean;
+  isVerify: boolean;
   profile: string;
   email: string;
   roles: string;
@@ -22,7 +22,7 @@ const venderSchema = new Schema<VenderDocument>(
     password: {
       type: String,
     },
-    is_verify: {
+    isVerify: {
       type: Boolean,
       default: false,
     },

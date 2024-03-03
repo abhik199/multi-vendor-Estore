@@ -1,10 +1,11 @@
 import express, { Request, Response, NextFunction } from "express";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
-import { userServices } from "../services/user.service";
 import emailService, { emailKey } from "../services/email.service";
 import generateTokens from "../utils/generateToken.util";
 import Joi from "joi";
+import userModel, { UserDocument } from "./../models/user.model";
+import { AuthRequest } from "../middleware/auth";
 
 // generate 6 digit otp
 const generateOtp = () => {
@@ -22,14 +23,16 @@ const create_user = async (req: Request, res: Response, next: NextFunction) => {
     return next(error);
   }
   try {
-    const check = await userServices.findOne({ email: req.body.email });
+    const check: UserDocument | null = await userModel.findOne({
+      email: req.body.email,
+    });
     if (check) {
       return res.json({ message: "user already exists" });
     }
 
     const hashPassword = await bcrypt.hash(req.body.password, 10);
     const OTP = generateOtp();
-    const user = await userServices.createUser({
+    const user = await userModel.create({
       ...req.body,
       password: hashPassword,
       otp: OTP,
@@ -67,7 +70,9 @@ const userLogin = async (req: Request, res: Response, next: NextFunction) => {
     return next(error);
   }
   try {
-    const user = await userServices.findOne({ email: req.body.email });
+    const user: UserDocument | null = await userModel.findOne({
+      email: req.body.email,
+    });
     if (!user) {
       return res.json({ message: "email and password wrong" });
     }
@@ -131,45 +136,61 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 const verifyUser = async (req: Request, res: Response, next: NextFunction) => {
-  if (!req.body.email || !req.body.otp) {
-    return res.json({ message: "user email and otp required " });
-  }
   try {
-    const user = await userServices.findOne({ email: req.body.email });
-    if (!user) {
-      return res.json({ message: "not a valid email" });
+    // Validate request body
+    const userSchema = Joi.object({
+      email: Joi.string().required(),
+      otp: Joi.number().required(),
+    });
+    const { error } = userSchema.validate(req.body);
+    if (error) {
+      return next(error);
     }
-    console.log(user.otp);
 
-    if (user.otp === req.body.otp) {
-      const update = await userServices.findAndUpdateUser(
-        { email: req.body.email },
-        { isVerity: true, otp: null },
+    const user: UserDocument | null = await userModel.findOne({
+      email: req.body.email,
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (req.body.otp === user.otp) {
+      const updatedUser = await userModel.findByIdAndUpdate(
+        user._id,
+        { otp: null, isVerity: true },
         { new: true }
       );
-      if (update) {
-        return res.json({ message: "user verified successfully" });
-      }
+      res.json({
+        message: "OTP verified and updated successfully",
+        user: updatedUser,
+      });
+
+      return res.json({ message: "OTP verified successfully" });
     } else {
-      return res.json({ message: "otp expired and wrong" });
+      if (user.isVerity === true) {
+        return res.status(400).json({ message: "user already verify" });
+      }
+      return res.status(400).json({ message: "Incorrect OTP" });
     }
   } catch (error) {
     return next(error);
   }
 };
-
 const reVerify = async (req: Request, res: Response, next: NextFunction) => {
   if (!req.body.email) {
     return res.json({ message: "missing email" });
   }
   try {
-    const user = await userServices.findOne({ email: req.body.email });
+    const user: UserDocument | null = await userModel.findOne({
+      email: req.body.email,
+    });
     if (!user) {
       return res.json({ message: "user is not found" });
     }
     if (user.isVerity === false) {
       const OTP = generateOtp();
-      const newOTP = await userServices.findAndUpdateUser(
+      const newOTP: UserDocument | null = await userModel.findByIdAndUpdate(
         { email: req.body.email },
         { otp: OTP },
         { new: true }
@@ -192,6 +213,74 @@ const reVerify = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+const logOutUser = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  const { _id } = req.user;
+  try {
+    res.clearCookie("token");
+    res.json({ message: "Logged out successfully" });
+  } catch (error) {
+    return next(error);
+  }
+};
+const resetPassword = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+  } catch (error) {
+    return next(error);
+  }
+};
+
+const createAddress = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+  } catch (error) {
+    return next(error);
+  }
+};
+
+const deleteAddress = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+  } catch (error) {
+    return next(error);
+  }
+};
+
+const editAddress = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+  } catch (error) {
+    return next(error);
+  }
+};
+
+const fetchAddress = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+  } catch (error) {
+    return next(error);
+  }
+};
+
 export const userController = {
   create_user,
   changePassword,
@@ -200,4 +289,10 @@ export const userController = {
   updateUser,
   verifyUser,
   reVerify,
+  logOutUser,
+  resetPassword,
+  createAddress,
+  deleteAddress,
+  fetchAddress,
+  editAddress,
 };

@@ -8,6 +8,8 @@ function errorHandler(
   res: Response,
   next: NextFunction
 ) {
+  console.log("hello");
+
   let statusCode = 500;
   let data = {
     message: "Internal server error",

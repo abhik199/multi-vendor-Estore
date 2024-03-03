@@ -5,7 +5,7 @@ export interface UserDocument extends Document {
   email: string;
   password: string;
   isVerity: boolean;
-  otp: string;
+  otp: number;
 }
 
 // user interface
@@ -16,7 +16,7 @@ interface User {
   email: string;
   password: string;
   isVerity: boolean;
-  otp: string;
+  otp: number;
   roles: string;
 }
 
@@ -36,7 +36,7 @@ const userSchema = new Schema<User>(
       default: false,
     },
     otp: {
-      type: String,
+      type: Number,
     },
     roles: {
       type: String,
