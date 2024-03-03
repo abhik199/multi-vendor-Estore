@@ -2,10 +2,13 @@
 
 import mongoose, { Schema, Document } from "mongoose";
 export interface OrderDocument extends Document {
-  user: string;
-  products: Array<{ product: string; quantity: number }>;
-  totalAmount: number;
-  orderStatus: string;
+  user: Schema.Types.ObjectId;
+  products: Array<{
+    product: Schema.Types.ObjectId;
+    quantity: number;
+    totalAmount: number;
+    orderStatus: string;
+  }>;
 }
 
 const orderSchema: Schema = new Schema(
@@ -26,18 +29,18 @@ const orderSchema: Schema = new Schema(
           type: Number,
           required: true,
         },
+        orderStatus: {
+          type: String,
+          enum: ["Pending", "Dispatched", "Delivered", "Canceled"],
+          default: "Pending",
+        },
+
+        totalAmount: {
+          type: Number,
+          required: true,
+        },
       },
     ],
-    orderStatus: {
-      type: String,
-      enum: ["Pending", "Dispatched", "Delivered", "Canceled"],
-      default: "Pending",
-    },
-
-    totalAmount: {
-      type: Number,
-      required: true,
-    },
   },
   { timestamps: true }
 );

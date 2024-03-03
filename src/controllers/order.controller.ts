@@ -11,7 +11,7 @@ const createOrder = async (
   const { _id } = req.user;
 
   const orderSchema = Joi.object({
-    product: Joi.string().required(),
+    products: Joi.string().required(),
     quantity: Joi.number().required(),
   });
   const { error } = orderSchema.validate(req.body);
@@ -19,6 +19,9 @@ const createOrder = async (
     return;
   }
   try {
+    const order: OrderDocument | null = await orderModel.create({
+      user: _id,
+    });
   } catch (error) {
     return next(error);
   }

@@ -1,5 +1,5 @@
 import { connect } from "mongoose";
-
+// data
 const local_db_url = "mongodb://127.0.0.1:27017/multi-vendor-ecommerce";
 
 const live_db_url =
