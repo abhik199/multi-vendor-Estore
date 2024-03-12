@@ -58,9 +58,6 @@ const create_user = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 const userLogin = async (req: Request, res: Response, next: NextFunction) => {
-  // if (!req.body.email || !req.body.password) {
-  //   return res.json({ message: "Incorrect email and password" });
-  // }
   const userSchema = Joi.object({
     email: Joi.string().required(),
     password: Joi.string().required(),
