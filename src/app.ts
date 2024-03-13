@@ -27,5 +27,5 @@ app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
 app.listen(port, () => {
-  console.log(`Serving on port ${port}`);
+    console.log(`Serving on port ${port}`);
 });

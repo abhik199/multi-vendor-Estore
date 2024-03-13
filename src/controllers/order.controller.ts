@@ -4,45 +4,45 @@ import { AuthRequest } from "../middleware/auth";
 import Joi from "joi";
 
 const createOrder = async (
-  req: AuthRequest,
-  res: Response,
-  next: NextFunction
+    req: AuthRequest,
+    res: Response,
+    next: NextFunction,
 ) => {
-  const { _id } = req.user;
+    const { _id } = req.user;
 
-  const orderSchema = Joi.object({
-    products: Joi.string().required(),
-    quantity: Joi.number().required(),
-  });
-  const { error } = orderSchema.validate(req.body);
-  if (error) {
-    return;
-  }
-  try {
-    const order: OrderDocument | null = await orderModel.create({
-      user: _id,
+    const orderSchema = Joi.object({
+        products: Joi.string().required(),
+        quantity: Joi.number().required(),
     });
-  } catch (error) {
-    return next(error);
-  }
+    const { error } = orderSchema.validate(req.body);
+    if (error) {
+        return;
+    }
+    try {
+        const order: OrderDocument | null = await orderModel.create({
+            user: _id,
+        });
+    } catch (error) {
+        return next(error);
+    }
 };
 
 const deleteOrder = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-  } catch (error) {
-    return next(error);
-  }
+    try {
+    } catch (error) {
+        return next(error);
+    }
 };
 
 const updateOrder = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-  } catch (error) {
-    return next(error);
-  }
+    try {
+    } catch (error) {
+        return next(error);
+    }
 };
 
 export const orderController = {
-  createOrder,
-  deleteOrder,
-  updateOrder,
+    createOrder,
+    deleteOrder,
+    updateOrder,
 };

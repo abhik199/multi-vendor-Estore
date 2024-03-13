@@ -2,47 +2,47 @@
 
 import mongoose, { Schema, Document } from "mongoose";
 export interface OrderDocument extends Document {
-  user: Schema.Types.ObjectId;
-  products: Array<{
-    product: Schema.Types.ObjectId;
-    quantity: number;
-    totalAmount: number;
-    orderStatus: string;
-  }>;
+    user: Schema.Types.ObjectId;
+    products: Array<{
+        product: Schema.Types.ObjectId;
+        quantity: number;
+        totalAmount: number;
+        orderStatus: string;
+    }>;
 }
 
 const orderSchema: Schema = new Schema(
-  {
-    user: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-    products: [
-      {
-        product: {
-          type: Schema.Types.ObjectId,
-          ref: "Product",
-          required: true,
+    {
+        user: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+            required: true,
         },
-        quantity: {
-          type: Number,
-          required: true,
-        },
-        orderStatus: {
-          type: String,
-          enum: ["Pending", "Dispatched", "Delivered", "Canceled"],
-          default: "Pending",
-        },
+        products: [
+            {
+                product: {
+                    type: Schema.Types.ObjectId,
+                    ref: "Product",
+                    required: true,
+                },
+                quantity: {
+                    type: Number,
+                    required: true,
+                },
+                orderStatus: {
+                    type: String,
+                    enum: ["Pending", "Dispatched", "Delivered", "Canceled"],
+                    default: "Pending",
+                },
 
-        totalAmount: {
-          type: Number,
-          required: true,
-        },
-      },
-    ],
-  },
-  { timestamps: true }
+                totalAmount: {
+                    type: Number,
+                    required: true,
+                },
+            },
+        ],
+    },
+    { timestamps: true },
 );
 
 export default mongoose.model<OrderDocument>("Order", orderSchema);

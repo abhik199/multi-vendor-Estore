@@ -12,23 +12,23 @@ venderRoute.patch("/update", venderController.updateVender);
 venderRoute.post("/forgot_password", venderController.forgotPassword);
 venderRoute.get("/reset_password", venderController.resetPassword);
 venderRoute.post(
-  "/change_password",
-  [auth, vendor_auth],
-  venderController.changePassword
+    "/change_password",
+    [auth, vendor_auth],
+    venderController.changePassword,
 );
 
 // product
 
 venderRoute.post(
-  "/product",
-  [auth, vendor_auth],
-  upload.array("product-image", 5),
-  productController.createProduct
+    "/product",
+    [auth, vendor_auth],
+    upload.array("product-image", 5),
+    productController.createProduct,
 );
 venderRoute.post(
-  "/category",
-  [auth, vendor_auth],
-  productController.createCategory
+    "/category",
+    [auth, vendor_auth],
+    productController.createCategory,
 );
 
 venderRoute.get("/product", productController.getProduct);

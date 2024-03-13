@@ -3,25 +3,25 @@ import Joi from "joi";
 const DEBUG_MODE = true;
 
 function errorHandler(
-  error: any,
-  req: Request,
-  res: Response,
-  next: NextFunction
+    error: any,
+    req: Request,
+    res: Response,
+    next: NextFunction,
 ) {
-  console.log("hello");
+    console.log("hello");
 
-  let statusCode = 500;
-  let data = {
-    message: "Internal server error",
-    ...(DEBUG_MODE === true && { originError: error.message }),
-  };
-  if (error instanceof Joi.ValidationError) {
-    statusCode = 422;
-    data = {
-      message: error.message,
+    let statusCode = 500;
+    let data = {
+        message: "Internal server error",
+        ...(DEBUG_MODE === true && { originError: error.message }),
     };
-  }
-  return res.status(statusCode).json(data);
+    if (error instanceof Joi.ValidationError) {
+        statusCode = 422;
+        data = {
+            message: error.message,
+        };
+    }
+    return res.status(statusCode).json(data);
 }
 
 export default errorHandler;
